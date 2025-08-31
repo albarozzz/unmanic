@@ -1,7 +1,10 @@
 FROM lsiobase/ubuntu:jammy
-FROM linuxserver/ffmpeg:7.1.1
+FROM linuxserver/ffmpeg:7.1.1 AS ffmpeg
 LABEL maintainer="Josh.5 <jsunnex@gmail.com>"
 
+COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
+COPY --from=ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe
+COPY --from=ffmpeg /usr/local/lib/* /usr/local/bin/
 
 # Env variables
 ENV \
