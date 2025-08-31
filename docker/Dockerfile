@@ -1,4 +1,5 @@
 FROM lsiobase/ubuntu:jammy
+FROM linuxserver/ffmpeg:7.1.1
 LABEL maintainer="Josh.5 <jsunnex@gmail.com>"
 
 
@@ -99,53 +100,8 @@ RUN \
 
 
 # Install commonly used command line tools
-ARG JELLYFIN_FFMPEG_VERSION="6"
 ARG NODE_MAJOR="20"
-RUN \
-    echo "**** Install FFmpeg for $(uname -m) ****" \
-        && sleep 2 \
-        && apt-get update \
-        && \
-        if uname -m | grep -q x86; then \
-            echo "**** Add Jellyfin repository ****" \
-                && wget -qO - https://repo.jellyfin.org/jellyfin_team.gpg.key | gpg --dearmor --output /usr/share/keyrings/jellyfin_team.gpg \
-                && echo "deb [arch=$( dpkg --print-architecture ) signed-by=/usr/share/keyrings/jellyfin_team.gpg] https://repo.jellyfin.org/ubuntu jammy main" | tee /etc/apt/sources.list.d/jellyfin.list \
-            && \
-            echo "**** Install jellyfin-ffmpeg and linked 3rd party libs ****" \
-                && apt-get update \
-                && apt-get install --no-install-recommends --no-install-suggests -y \
-                    openssl \
-                    locales \
-                && apt-get install -y \
-                    jellyfin-ffmpeg${JELLYFIN_FFMPEG_VERSION} \
-                && ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
-                && ln -s /usr/lib/jellyfin-ffmpeg/ffprobe /usr/local/bin/ffprobe \
-            && \
-            echo ; \
-        fi \
-        && \
-        if uname -m | grep -q aarch64; then \
-            echo "**** Add Jellyfin repository ****" \
-                && wget -qO - https://repo.jellyfin.org/jellyfin_team.gpg.key | gpg --dearmor --output /usr/share/keyrings/jellyfin_team.gpg \
-                && echo "deb [arch=$( dpkg --print-architecture ) signed-by=/usr/share/keyrings/jellyfin_team.gpg] https://repo.jellyfin.org/ubuntu jammy main" | tee /etc/apt/sources.list.d/jellyfin.list \
-            && \
-            echo "**** Install jellyfin-ffmpeg and linked 3rd party libs ****" \
-                && apt-get update \
-                && apt-get install --no-install-recommends --no-install-suggests -y \
-                    locales \
-                    libssl-dev \
-                    libfontconfig1 \
-                    libfreetype6 \
-                    libomxil-bellagio0 \
-                    libomxil-bellagio-bin \
-                && apt-get install -y \
-                    jellyfin-ffmpeg${JELLYFIN_FFMPEG_VERSION} \
-                && ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
-                && ln -s /usr/lib/jellyfin-ffmpeg/ffprobe /usr/local/bin/ffprobe \
-            && \
-            echo ; \
-        fi \
-    && \
+RUN apt-get update && \
     echo "**** Install startup script requirements ****" \
         && apt-get install -y \
             jq \
